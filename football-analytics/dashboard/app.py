@@ -5,71 +5,20 @@ from pages_lib import home, player_season, team_season, league_ranking
 
 st.set_page_config(page_title="Football Analytics", page_icon="⚽", layout="wide")
 
-
 CUSTOM_CSS = """
 <style>
-
-/* Main */
-.block-container {
-    padding-top: 1rem;
-    padding-bottom: 2rem;
-    max-width: 1400px;
+.block-container {padding-top: 1.5rem; padding-bottom: 2rem;}
+[data-testid="stMetric"] {
+    background-color: rgba(45, 212, 191, 0.06);
+    border: 1px solid rgba(45, 212, 191, 0.18);
+    border-radius: 10px;
+    padding: 10px 14px;
 }
-
-/* Sidebar */
-section[data-testid="stSidebar"]{
-    border-right:1px solid rgba(255,255,255,.08);
-}
-
-section[data-testid="stSidebar"] h2{
-    margin-bottom:.3rem;
-}
-
-/* Metric Cards */
-[data-testid="stMetric"]{
-    background: rgba(45,212,191,.06);
-    border: 1px solid rgba(45,212,191,.18);
-    border-radius:14px;
-    padding:14px;
-    box-shadow:0 2px 8px rgba(0,0,0,.08);
-}
-
-[data-testid="stMetricLabel"]{
-    font-size:.85rem;
-    opacity:.75;
-}
-
-[data-testid="stMetricValue"]{
-    font-size:1.7rem;
-    font-weight:700;
-}
-
-/* Headers */
-h1{
-    font-weight:800 !important;
-}
-
-h2{
-    font-weight:700 !important;
-}
-
-/* Search Box */
-.stTextInput input{
-    border-radius:12px;
-}
-
-/* Buttons */
-.stButton button{
-    width:100%;
-    text-align:left;
-    border-radius:10px;
-}
-
-/* Divider */
-hr{
-    margin:1rem 0;
-}
-
+[data-testid="stMetricLabel"] {opacity: 0.75; font-size: 0.8rem;}
+[data-testid="stMetricValue"] {font-size: 1.35rem;}
+section[data-testid="stSidebar"] {border-right: 1px solid rgba(255,255,255,0.06);}
+.search-hit-btn button {width: 100%; text-align: left;}
+hr {margin: 0.6rem 0;}
 </style>
 """
 st.markdown(CUSTOM_CSS, unsafe_allow_html=True)
@@ -106,30 +55,17 @@ if "nav_page" not in st.session_state:
 with st.sidebar:
     st.markdown("## ⚽ Football Analytics")
 
-    query = st.text_input("Quick search — player or team", key="global_search", placeholder="e.g. Messi, Arsenal…")
-   if query:
-    matching_players, matching_teams = search_entities(df, query)
+    query = st.text_input("🔍 Quick search — player or team", key="global_search", placeholder="e.g. Messi, Arsenal…")
+    if query:
+        matching_players, matching_teams = search_entities(df, query)
+        if not matching_players and not matching_teams:
+            st.caption("No matches.")
+        for p in matching_players:
+            st.button(f"🧑 {p}", key=f"hit_player_{p}", on_click=_go_to_player, args=(p, player_latest_context(df, p)))
+        for t in matching_teams:
+            st.button(f"🛡️ {t}", key=f"hit_team_{t}", on_click=_go_to_team, args=(t, team_latest_context(df, t)))
+        st.divider()
 
-    if not matching_players and not matching_teams:
-        st.caption("No matches.")
-
-    for p in matching_players:
-        st.button(
-            f"🧑 {p}",
-            key=f"hit_player_{p}",
-            on_click=_go_to_player,
-            args=(p, player_latest_context(df, p))
-        )
-
-    for t in matching_teams:
-        st.button(
-            f"🛡️ {t}",
-            key=f"hit_team_{t}",
-            on_click=_go_to_team,
-            args=(t, team_latest_context(df, t))
-        )
-
-    st.divider()
     page = st.radio(
         "Navigate",
         ["Home", "Player Season", "Team Season", "League Ranking"],
