@@ -4,30 +4,70 @@ from data import load_denormalized, search_entities, player_latest_context, team
 from pages_lib import home, player_season, team_season, league_ranking
 
 st.set_page_config(page_title="Football Analytics", page_icon="⚽", layout="wide")
+
+
 CUSTOM_CSS = """
 <style>
 
-.block-container{
-    max-width:1400px;
-    padding-top:1rem;
+/* Main */
+.block-container {
+    padding-top: 1rem;
+    padding-bottom: 2rem;
+    max-width: 1400px;
 }
 
+/* Sidebar */
+section[data-testid="stSidebar"]{
+    border-right:1px solid rgba(255,255,255,.08);
+}
+
+section[data-testid="stSidebar"] h2{
+    margin-bottom:.3rem;
+}
+
+/* Metric Cards */
 [data-testid="stMetric"]{
-    background:#111827;
-    border:1px solid rgba(45,212,191,.25);
-    border-radius:16px;
-    padding:18px;
-    box-shadow:0 4px 14px rgba(0,0,0,.12);
+    background: rgba(45,212,191,.06);
+    border: 1px solid rgba(45,212,191,.18);
+    border-radius:14px;
+    padding:14px;
+    box-shadow:0 2px 8px rgba(0,0,0,.08);
 }
 
 [data-testid="stMetricLabel"]{
-    font-size:.95rem;
-    font-weight:600;
+    font-size:.85rem;
+    opacity:.75;
 }
 
 [data-testid="stMetricValue"]{
-    font-size:2rem;
-    font-weight:800;
+    font-size:1.7rem;
+    font-weight:700;
+}
+
+/* Headers */
+h1{
+    font-weight:800 !important;
+}
+
+h2{
+    font-weight:700 !important;
+}
+
+/* Search Box */
+.stTextInput input{
+    border-radius:12px;
+}
+
+/* Buttons */
+.stButton button{
+    width:100%;
+    text-align:left;
+    border-radius:10px;
+}
+
+/* Divider */
+hr{
+    margin:1rem 0;
 }
 
 </style>
