@@ -9,7 +9,7 @@ def render(df: pd.DataFrame):
     with st.sidebar:
         pool, league, season, _ = season_league_filters(df, "home")
 
-    st.markdown("## 🏠 Overview")
+    st.markdown("## 📈 Performance Overview")
     st.caption(f"{league} · {season}")
 
     c1, c2, c3, c4, c5 = st.columns(5)
