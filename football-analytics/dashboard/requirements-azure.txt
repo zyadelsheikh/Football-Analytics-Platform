@@ -1,0 +1,3 @@
+# Only needed if you're connecting to Azure Synapse (data_source = "azure").
+# Not required for the default local-CSV mode.
+mssql-python>=1.0
