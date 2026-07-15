@@ -108,15 +108,34 @@ with st.sidebar:
 
     query = st.text_input("Quick search — player or team", key="global_search", placeholder="e.g. Messi, Arsenal…")
     if query:
-        matching_players, matching_teams = search_entities(df, query)
-        if not matching_players and not matching_teams:
-            st.caption("No matches.")
-        for p in matching_players:
-            st.button(f"🧑 {p}", key=f"hit_player_{p}", on_click=_go_to_player, args=(p, player_latest_context(df, p)))
-        for t in matching_teams:
-            st.button(f"🛡️ {t}", key=f"hit_team_{t}", on_click=_go_to_team, args=(t, team_latest_context(df, t)))
-        st.divider()
+    matching_players, matching_teams = search_entities(df, query)
 
+    if not matching_players and not matching_teams:
+        st.caption("No results found")
+
+    if matching_players:
+        st.markdown("##### 👤 Players")
+        for p in matching_players:
+            st.button(
+                f"⚽ {p}",
+                key=f"hit_player_{p}",
+                use_container_width=True,
+                on_click=_go_to_player,
+                args=(p, player_latest_context(df, p))
+            )
+
+    if matching_teams:
+        st.markdown("##### 🛡️ Teams")
+        for t in matching_teams:
+            st.button(
+                f"🏟️ {t}",
+                key=f"hit_team_{t}",
+                use_container_width=True,
+                on_click=_go_to_team,
+                args=(t, team_latest_context(df, t))
+            )
+
+    st.divider()
     page = st.radio(
         "Navigate",
         ["Home", "Player Season", "Team Season", "League Ranking"],
