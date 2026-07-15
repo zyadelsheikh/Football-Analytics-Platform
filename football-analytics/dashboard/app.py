@@ -7,65 +7,27 @@ st.set_page_config(page_title="Football Analytics", page_icon="⚽", layout="wid
 CUSTOM_CSS = """
 <style>
 
-/* Main */
-.block-container {
-    padding-top: 1rem;
-    padding-bottom: 2rem;
-    max-width: 1400px;
+.block-container{
+    max-width:1400px;
+    padding-top:1rem;
 }
 
-/* Sidebar */
-section[data-testid="stSidebar"]{
-    border-right:1px solid rgba(255,255,255,.08);
-}
-
-section[data-testid="stSidebar"] h2{
-    margin-bottom:.3rem;
-}
-
-/* Metric Cards */
 [data-testid="stMetric"]{
-    background: rgba(45,212,191,.06);
-    border: 1px solid rgba(45,212,191,.18);
-    border-radius:14px;
-    padding:14px;
-    box-shadow:0 2px 8px rgba(0,0,0,.08);
+    background:#111827;
+    border:1px solid rgba(45,212,191,.25);
+    border-radius:16px;
+    padding:18px;
+    box-shadow:0 4px 14px rgba(0,0,0,.12);
 }
 
 [data-testid="stMetricLabel"]{
-    font-size:.85rem;
-    opacity:.75;
+    font-size:.95rem;
+    font-weight:600;
 }
 
 [data-testid="stMetricValue"]{
-    font-size:1.7rem;
-    font-weight:700;
-}
-
-/* Headers */
-h1{
-    font-weight:800 !important;
-}
-
-h2{
-    font-weight:700 !important;
-}
-
-/* Search Box */
-.stTextInput input{
-    border-radius:12px;
-}
-
-/* Buttons */
-.stButton button{
-    width:100%;
-    text-align:left;
-    border-radius:10px;
-}
-
-/* Divider */
-hr{
-    margin:1rem 0;
+    font-size:2rem;
+    font-weight:800;
 }
 
 </style>
