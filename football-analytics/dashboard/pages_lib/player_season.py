@@ -128,7 +128,15 @@ def _render_header(player, league, season, row):
     avg_min = row["Minutes_Played"] / row["Matches_Played"] if row["Matches_Played"] else 0
     c4.metric("Avg Min", f"{avg_min:.0f}")
     c5.metric("90s", f"{row['Full_Match_Equivalents']:.1f}" if pd.notna(row["Full_Match_Equivalents"]) else "—")
-
+    
+    st.markdown("""
+    <style>
+    .player-header-gap {
+        margin-bottom: -20px;
+    }
+    </style>
+    <div class="player-header-gap"></div>
+    """, unsafe_allow_html=True)
 
 def _render_compare_table(pool: pd.DataFrame, player: str, compare_pool: pd.DataFrame, compare_player: str):
     st.markdown("#### Head-to-Head")
