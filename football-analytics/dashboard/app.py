@@ -55,7 +55,7 @@ if "nav_page" not in st.session_state:
 with st.sidebar:
     st.markdown("## ⚽ Football Analytics")
 
-    query = st.text_input("🌍 Global Search", key="global_search", placeholder="e.g. Messi, Arsenal…")
+    query = st.text_input(" Search Players & Teams", key="global_search", placeholder="e.g. Messi, Arsenal…")
     if query:
         matching_players, matching_teams = search_entities(df, query)
         if not matching_players and not matching_teams:
