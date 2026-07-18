@@ -43,35 +43,7 @@ def _with_extra_stats(row: pd.Series) -> dict:
     extra["assists_per90"] = (row.get("Assists", np.nan) / nineties) if nineties and pd.notna(nineties) and nineties > 0 else np.nan
     return extra
     
-def get_similar_players(full_df, player_name, top_n=5):
 
-    features = [
-        "Goals",
-        "Assists",
-        "Expected_Goals",
-        "Expected_Assists",
-        "Shots"
-    ]
-
-    data = full_df[["player"] + features].copy()
-
-    data = data.groupby("player")[features].mean().reset_index()
-
-    scaler = StandardScaler()
-
-    X = scaler.fit_transform(
-        data[features].fillna(0)
-    )
-
-    similarity_matrix = cosine_similarity(X)
-
-    idx = data.index[
-        data["player"] == player_name
-    ][0]
-
-    scores = similarity_matrix[idx]
-
-    data["similarity"] = scores
 
     result = (
         data[data["player"] != player_name]
@@ -154,14 +126,7 @@ def render(full_df: pd.DataFrame):
                 cols2[i % 2].metric(label, display)
 
 
-            st.markdown("### 🔍 Similar Players")
-
-            similar = get_similar_players(full_df, player)
-
-            for _, row_sim in similar.iterrows():
-                st.write(
-                    f"⚽ {row_sim['player']} — {row_sim['similarity']*100:.0f}% Match"
-                )
+         
 
 
 def _render_header(player, league, season, row):
