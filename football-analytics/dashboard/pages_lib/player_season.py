@@ -4,8 +4,7 @@ import plotly.express as px
 import plotly.graph_objects as go
 import streamlit as st
 
-from sklearn.preprocessing import StandardScaler
-from sklearn.metrics.pairwise import cosine_similarity
+
 
 from data import (
     RADAR_DEFAULT_METRICS, per90, percentile_rank, metric_has_data, player_trend,
