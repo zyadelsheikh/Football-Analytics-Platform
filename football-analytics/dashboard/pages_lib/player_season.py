@@ -44,14 +44,7 @@ def _with_extra_stats(row: pd.Series) -> dict:
     return extra
     
 
-
-    result = (
-        data[data["player"] != player_name]
-        .sort_values("similarity", ascending=False)
-        .head(top_n)
-    )
-
-    return result[["player", "similarity"]]    
+   
 
 def render(full_df: pd.DataFrame):
     with st.sidebar:
