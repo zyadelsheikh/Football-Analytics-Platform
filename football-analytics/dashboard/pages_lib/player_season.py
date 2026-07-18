@@ -115,28 +115,48 @@ def render(full_df: pd.DataFrame):
 
 
 def _render_header(player, league, season, row):
-    c1, c2, c3, c4, c5 = st.columns([2, 1, 1, 1, 1])
-    with c1:
-        st.markdown(f"## {player}")
-        st.caption(f"{row['team']} · {league} · {season}")
-        pos = row.get("Pos", "—")
-        nation = row.get("Nation", "—")
-        born = row.get("Born", "—")
-        st.caption(f"🌍 {nation}  ·  🎂 Born {int(born) if pd.notna(born) else '—'}  ·  Position: {pos}")
-    c2.metric("Minutes", f"{int(row['Minutes_Played']):,}")
-    c3.metric("Apps", int(row["Matches_Played"]))
-    avg_min = row["Minutes_Played"] / row["Matches_Played"] if row["Matches_Played"] else 0
-    c4.metric("Avg Min", f"{avg_min:.0f}")
-    c5.metric("90s", f"{row['Full_Match_Equivalents']:.1f}" if pd.notna(row["Full_Match_Equivalents"]) else "—")
+
+    st.markdown(f"## {player}")
+
+    st.caption(f"{row['team']} · {league} · {season}")
+
+    pos = row.get("Pos", "—")
+    nation = row.get("Nation", "—")
+    born = row.get("Born", "—")
+
+    st.caption(
+        f"🌍 {nation} · 🎂 Born {int(born) if pd.notna(born) else '—'} · Position: {pos}"
+    )
+
+    st.write("")
+
+    c1, c2, c3, c4, c5 = st.columns(5)
+
+    c1.metric("Minutes", f"{int(row['Minutes_Played']):,}")
+
+    c2.metric("Apps", int(row["Matches_Played"]))
+
+    avg_min = (
+        row["Minutes_Played"] / row["Matches_Played"]
+        if row["Matches_Played"]
+        else 0
+    )
+
+    c3.metric("Avg Min", f"{avg_min:.0f}")
+
+    c4.metric(
+        "90s",
+        f"{row['Full_Match_Equivalents']:.1f}"
+        if pd.notna(row["Full_Match_Equivalents"])
+        else "—"
+    )
+
+    c5.metric(
+        "Goals",
+        int(row["Goals"]) if pd.notna(row.get("Goals")) else 0
+    )
     
-    st.markdown("""
-    <style>
-    .player-header-gap {
-        margin-bottom: -20px;
-    }
-    </style>
-    <div class="player-header-gap"></div>
-    """, unsafe_allow_html=True)
+    
 
 def _render_compare_table(pool: pd.DataFrame, player: str, compare_pool: pd.DataFrame, compare_player: str):
     st.markdown("#### Head-to-Head")
