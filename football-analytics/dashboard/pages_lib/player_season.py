@@ -4,8 +4,6 @@ import plotly.express as px
 import plotly.graph_objects as go
 import streamlit as st
 
-
-
 from data import (
     RADAR_DEFAULT_METRICS, per90, percentile_rank, metric_has_data, player_trend,
 )
@@ -42,9 +40,7 @@ def _with_extra_stats(row: pd.Series) -> dict:
     extra["goals_per90"] = (row.get("Goals", np.nan) / nineties) if nineties and pd.notna(nineties) and nineties > 0 else np.nan
     extra["assists_per90"] = (row.get("Assists", np.nan) / nineties) if nineties and pd.notna(nineties) and nineties > 0 else np.nan
     return extra
-    
 
-   
 
 def render(full_df: pd.DataFrame):
     with st.sidebar:
@@ -118,53 +114,48 @@ def render(full_df: pd.DataFrame):
                 display = f"{val:.1f}" if pd.notna(val) else "—"
                 cols2[i % 2].metric(label, display)
 
+    st.divider()
+    st.markdown(f"#### 📈 {player} — Performance Trend Across Seasons")
+    trend_metrics = [m for m in TREND_METRICS if metric_has_data(full_df, m)]
+    trend_df = player_trend(full_df, player, trend_metrics)
+    if len(trend_df) >= 2:
+        fig = px.line(
+            trend_df, x="season", y=trend_metrics, markers=True,
+            labels={"value": "Total", "season": "Season", "variable": "Metric"},
+        )
+        fig.update_layout(height=380, margin=dict(l=10, r=10, t=20, b=10), legend_title="")
+        st.plotly_chart(fig, width="stretch")
+    else:
+        st.info(f"{player} only has one season on record — nothing to trend yet.")
 
-         
+    st.divider()
+    st.markdown("#### 📋 Season-by-Season Log")
+    log_cols = [
+        "season", "league", "team", "Pos", "Age", "Matches_Played", "Minutes_Played",
+        "Goals", "Assists",
+    ]
+    if metric_has_data(full_df, "Expected_Goals"):
+        log_cols += ["Expected_Goals", "Expected_Assists", "Shots", "Key_Passes", "Tackles"]
+    player_rows = full_df[full_df["player"] == player].sort_values("season_id")
+    st.dataframe(player_rows[log_cols], width="stretch", hide_index=True)
+    export_buttons(player_rows, f"{player.replace(' ', '_')}_stats", "ps")
 
 
 def _render_header(player, league, season, row):
+    c1, c2, c3, c4, c5 = st.columns([2, 1, 1, 1, 1])
+    with c1:
+        st.markdown(f"## {player}")
+        st.caption(f"{row['team']} · {league} · {season}")
+        pos = row.get("Pos", "—")
+        nation = row.get("Nation", "—")
+        born = row.get("Born", "—")
+        st.caption(f"🌍 {nation}  ·  🎂 Born {int(born) if pd.notna(born) else '—'}  ·  Position: {pos}")
+    c2.metric("Minutes", f"{int(row['Minutes_Played']):,}")
+    c3.metric("Apps", int(row["Matches_Played"]))
+    avg_min = row["Minutes_Played"] / row["Matches_Played"] if row["Matches_Played"] else 0
+    c4.metric("Avg Min", f"{avg_min:.0f}")
+    c5.metric("90s", f"{row['Full_Match_Equivalents']:.1f}" if pd.notna(row["Full_Match_Equivalents"]) else "—")
 
-    st.markdown(f"## {player}")
-
-    st.caption(f"{row['team']} · {league} · {season}")
-
-    pos = row.get("Pos", "—")
-    nation = row.get("Nation", "—")
-    born = row.get("Born", "—")
-
-    st.caption(
-        f"🌍 {nation} · 🎂 Born {int(born) if pd.notna(born) else '—'} · Position: {pos}"
-    )
-
-    st.write("")
-
-    c1, c2, c3, c4, c5 = st.columns(5)
-
-    c1.metric("Minutes", f"{int(row['Minutes_Played']):,}")
-
-    c2.metric("Apps", int(row["Matches_Played"]))
-
-    avg_min = (
-        row["Minutes_Played"] / row["Matches_Played"]
-        if row["Matches_Played"]
-        else 0
-    )
-
-    c3.metric("Avg Min", f"{avg_min:.0f}")
-
-    c4.metric(
-        "90s",
-        f"{row['Full_Match_Equivalents']:.1f}"
-        if pd.notna(row["Full_Match_Equivalents"])
-        else "—"
-    )
-
-    c5.metric(
-        "Goals",
-        int(row["Goals"]) if pd.notna(row.get("Goals")) else 0
-    )
-    
-    
 
 def _render_compare_table(pool: pd.DataFrame, player: str, compare_pool: pd.DataFrame, compare_player: str):
     st.markdown("#### Head-to-Head")
