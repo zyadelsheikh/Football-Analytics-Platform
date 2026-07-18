@@ -68,7 +68,7 @@ def render(full_df: pd.DataFrame):
     row = row.iloc[0]
 
     _render_header(player, league, season, row)
-    #st.divider()
+    st.divider()
 
     advanced_available = metric_has_data(pool, "Expected_Goals")
     if not advanced_available:
