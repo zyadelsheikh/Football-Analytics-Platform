@@ -4,6 +4,9 @@ import plotly.express as px
 import plotly.graph_objects as go
 import streamlit as st
 
+from sklearn.preprocessing import StandardScaler
+from sklearn.metrics.pairwise import cosine_similarity
+
 from data import (
     RADAR_DEFAULT_METRICS, per90, percentile_rank, metric_has_data, player_trend,
 )
@@ -40,6 +43,44 @@ def _with_extra_stats(row: pd.Series) -> dict:
     extra["goals_per90"] = (row.get("Goals", np.nan) / nineties) if nineties and pd.notna(nineties) and nineties > 0 else np.nan
     extra["assists_per90"] = (row.get("Assists", np.nan) / nineties) if nineties and pd.notna(nineties) and nineties > 0 else np.nan
     return extra
+    
+def get_similar_players(full_df, player_name, top_n=5):
+
+    features = [
+        "Goals",
+        "Assists",
+        "Expected_Goals",
+        "Expected_Assists",
+        "Shots"
+    ]
+
+    data = full_df[["player"] + features].copy()
+
+    data = data.groupby("player")[features].mean().reset_index()
+
+    scaler = StandardScaler()
+
+    X = scaler.fit_transform(
+        data[features].fillna(0)
+    )
+
+    similarity_matrix = cosine_similarity(X)
+
+    idx = data.index[
+        data["player"] == player_name
+    ][0]
+
+    scores = similarity_matrix[idx]
+
+    data["similarity"] = scores
+
+    result = (
+        data[data["player"] != player_name]
+        .sort_values("similarity", ascending=False)
+        .head(top_n)
+    )
+
+    return result[["player", "similarity"]]    
 
 def render(full_df: pd.DataFrame):
     with st.sidebar:
@@ -112,6 +153,16 @@ def render(full_df: pd.DataFrame):
                 val = extra.get(key, np.nan)
                 display = f"{val:.1f}" if pd.notna(val) else "—"
                 cols2[i % 2].metric(label, display)
+
+
+            st.markdown("### 🔍 Similar Players")
+
+            similar = get_similar_players(full_df, player)
+
+            for _, row_sim in similar.iterrows():
+                st.write(
+                    f"⚽ {row_sim['player']} — {row_sim['similarity']*100:.0f}% Match"
+                )
 
 
 def _render_header(player, league, season, row):
